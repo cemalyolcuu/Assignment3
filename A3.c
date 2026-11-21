@@ -107,8 +107,19 @@ void freeList(LinkedList* head)
 	}
 }
 
+/*
+* Function		: insertIntoHashTable
+* Description	: Adds a name to the corrct hash table bucket
+* Returns		: 1 if succesfull, 0 otherwise
+*/
+int insertIntoHashTable(LinkedList* hashTable[], char* name)
+{
+	int index = GenerateHash(name);
+	return insertSorted(&hashTable[index], name);
+}
+
 int main(void)
 {
-	
+
 	return 0;
 }
