@@ -120,6 +120,66 @@ int insertIntoHashTable(LinkedList* hashTable[], char* name)
 
 int main(void)
 {
+	LinkedList* head = NULL;
+	LinkedList* hashTable[SIZE] = { NULL };
+
+	FILE* file = NULL;
+	char name[64];
+	int totalNames = 0;
+	int success = 1;
+	
+	// open names.txt
+	if (fopen_s(&file, "names.txt", "r") != 0)
+	{
+		printf("Error: Cannot open names.txt.\n");
+		return 1;
+	}
+	// read names from file
+	while (fgets(name, sizeof(name), file) != NULL)
+	{
+		name[strcspn(name, "\r\n")] = '\0'; // Remove newline character
+
+		if (strlen(name) == 0)
+		{
+			continue;
+		}
+
+		// add name to sorted linked list
+		if (!insertSorted(&head, name))
+		{
+			printf("Memory allocation failed.\n");
+			success = 0;
+			break;
+		}
+
+		// add name to hash table
+		if (!insertIntoHashTable(hashTable, name))
+		{
+			printf("Memory allocation failed.\n");
+			success = 0;
+			break;
+		}
+
+		totalNames++;
+	}
+
+	if (ferror(file))
+	{
+		printf("Error reading names.txt.\n");
+		success = 0;
+	}
+	
+	fclose(file);
+
+	// free sorted linked list
+	freeList(head);
+
+	// free hash table
+	for (int i = 0; i < SIZE; i++)
+	{
+		freeList(hashTable[i]);
+	}
+	return success ? 0 : 1;
 
 	return 0;
 }
