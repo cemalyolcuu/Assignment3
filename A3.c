@@ -1,3 +1,14 @@
+/*
+* FILE			: A3.c
+* PROJECT		: Assignment 3 - Data Structures
+* PROGRAMMER	: Cemal Yolcu
+* DATE			: 2026-11-21
+* 
+* DESCRIPTION	: This program compares a sorted linked list and a hash table.
+*				  It reads names from a text file and stores them in both data structures.
+*				  The user can search for a name, andthe program counts the comparisons for each search method.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,11 +22,12 @@ typedef struct linkedList
 } LinkedList;
 
 /*
-* Function		: GenerateHash
-* Description	: Calculates the hash index for a name.
-* Returns		: The bucket index
-*/
-int GenerateHash(char* name)
+ * FUNCTION    : generateHash
+ * DESCRIPTION : Calculates the hash table index for a name.
+ * PARAMETERS  : char* name : The name to calculate a hash for.
+ * RETURNS     : int : The bucket index.
+ */
+int generateHash(char* name)
 {
 	int hash = 0;
 	for (int i = 0; name[i] != '\0'; i++)
@@ -27,10 +39,11 @@ int GenerateHash(char* name)
 }
 
 /*
-* Function		: createNode
-* Description	: Creates a new linked list node and stores a name
-* Returns		: The new node, or NULL if memory allocation fails
-*/
+ * FUNCTION    : createNode
+ * DESCRIPTION : Creates a linked list node and allocates memory for a name.
+ * PARAMETERS  : char* name : The name to store in the node.
+ * RETURNS     : LinkedList* : The new node, or NULL if memory allocation fails.
+ */
 LinkedList* createNode(char* name)
 {
 	LinkedList* newNode = (LinkedList*)malloc(sizeof(LinkedList));
@@ -55,10 +68,12 @@ LinkedList* createNode(char* name)
 }
 
 /*
-* Function		: insertSorted
-* Description	: Adds a new name to the linked list in alphabetical order
-* Returns		: 1 if succesfull, 0 if memory allocation fails
-*/
+ * FUNCTION    : insertSorted
+ * DESCRIPTION : Inserts a new name in alphabetical order in a linked list.
+ * PARAMETERS  : LinkedList** head : The address of the first node pointer. 
+				 char* name : The name to insert.
+ * RETURNS     : int : 1 if successful, or 0 if memory allocation fails.
+ */
 int insertSorted(LinkedList** head, char* name)
 {
 	LinkedList* newNode = createNode(name);
@@ -90,10 +105,11 @@ int insertSorted(LinkedList** head, char* name)
 }
 
 /*
-* Function		: freeList
-* Description	: Frees all nodes and names in a linked list
-* Returns		: void
-*/
+ * FUNCTION    : freeList
+ * DESCRIPTION : Frees all the names and nodes in a linked list.
+ * PARAMETERS  : LinkedList* head : The first node of the list to free.
+ * RETURNS     : void : No value is returned.
+ */
 void freeList(LinkedList* head)
 {
 	LinkedList* temp;
@@ -108,21 +124,26 @@ void freeList(LinkedList* head)
 }
 
 /*
-* Function		: insertIntoHashTable
-* Description	: Adds a name to the corrct hash table bucket
-* Returns		: 1 if succesfull, 0 otherwise
-*/
+ * FUNCTION    : insertIntoHashTable
+ * DESCRIPTION : Inserts a name into its sorted hash table bucket.
+ * PARAMETERS  : LinkedList* hashTable[] : The hash table buckets.
+ *               char* name : The name to insert.
+ * RETURNS     : int : 1 if successful, or 0 if memory allocation fails.
+ */
 int insertIntoHashTable(LinkedList* hashTable[], char* name)
 {
-	int index = GenerateHash(name);
+	int index = generateHash(name);
 	return insertSorted(&hashTable[index], name);
 }
 
 /*
-* Function      : searchLinkedList
-* Description   : Searches for a name in a sorted linked list and counts the comparisons
-* Returns       : The matching node or NULL
-*/
+ * FUNCTION    : searchLinkedList
+ * DESCRIPTION : Searches a sorted linked list and counts strcmp calls.
+ * PARAMETERS  : char* searchName : The name to search for.
+ *               LinkedList* linkedList : The first node of the list.
+ *               int* comparisonCount : Stores the number of comparisons.
+ * RETURNS     : LinkedList* : The matching node, or NULL if not found.
+ */
 LinkedList* searchLinkedList(char* searchName, LinkedList* linkedList, int* comparisonCount)
 {
 	LinkedList* current = linkedList;
@@ -147,15 +168,16 @@ LinkedList* searchLinkedList(char* searchName, LinkedList* linkedList, int* comp
 
 		current = current->next;
 	}
-
 	return NULL;
 }
 
 /*
-* Function      : searchForNameTwice
-* Description   : Searches for a name in both data structures and displays the comparison counts
-* Returns       : void
-*/
+ * FUNCTION    : searchForNameTwice
+ * DESCRIPTION : Searches both data structures and prints the results.
+ * PARAMETERS  : char* searchName : The name to search for. LinkedList* hashTable[] : The hash table buckets.
+ *               int comparisonCount[2] : Counts for both search methods. LinkedList* head : The first node of the long linked list.
+ * RETURNS     : void : No value is returned.
+ */
 void searchForNameTwice(char* searchName, LinkedList* hashTable[], int comparisonCount[2], LinkedList* head)
 {
 	LinkedList* found;
@@ -173,7 +195,7 @@ void searchForNameTwice(char* searchName, LinkedList* hashTable[], int compariso
 	}
 
 	// search the hash table
-	index = GenerateHash(searchName);
+	index = generateHash(searchName);
 	found= searchLinkedList(searchName, hashTable[index], &comparisonCount[1]);
 
 	if (found != NULL)
@@ -184,9 +206,15 @@ void searchForNameTwice(char* searchName, LinkedList* hashTable[], int compariso
 	{
 		printf("\t%s was NOT found in the hash table bucket in %d comparisons\n", searchName, comparisonCount[1]);
 	}
-
 }
 
+/*
+ * FUNCTION    : main
+ * DESCRIPTION : Loads names into both data structures, searches names entered
+ *               by the user and prints the comparison totals.
+ * PARAMETERS  : void
+ * RETURNS     : int : 0 if successful, 1 if an error occurred.
+ */
 int main(void)
 {
 	LinkedList* head = NULL;
@@ -194,7 +222,6 @@ int main(void)
 
 	FILE* file = NULL;
 	char name[64];
-	int totalNames = 0;
 	int success = 1;
 	
 	// open names.txt
@@ -228,8 +255,6 @@ int main(void)
 			success = 0;
 			break;
 		}
-
-		totalNames++;
 	}
 
 	if (ferror(file))
@@ -239,7 +264,6 @@ int main(void)
 	}
 	
 	fclose(file);
-
 
 	// search names entered by the user
 	if (success)
@@ -274,7 +298,6 @@ int main(void)
 		printf("Total hash table comparisons: %d\n", totalHashComparisons);
 	}
 
-
 	// free sorted linked list
 	freeList(head);
 
@@ -284,5 +307,4 @@ int main(void)
 		freeList(hashTable[i]);
 	}
 	return success ? 0 : 1;
-
 }
