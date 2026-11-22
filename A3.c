@@ -240,6 +240,41 @@ int main(void)
 	
 	fclose(file);
 
+
+	// search names entered by the user
+	if (success)
+	{
+		int comparisonCount[2] = { 0, 0 };
+		int totalSearches = 0;
+		int totalListComparisons = 0;
+		int totalHashComparisons = 0;
+	
+		while (1)
+		{
+			printf("Enter name: ");
+
+			if (fgets(name, sizeof(name), stdin) == NULL)
+			{
+				break;
+			}
+
+			name[strcspn(name, "\r\n")] = '\0';
+			if (strlen(name) == 0)
+			{
+				continue;
+			}
+			searchForNameTwice(name, hashTable, comparisonCount, head);
+			totalSearches++;
+			totalListComparisons += comparisonCount[0];
+			totalHashComparisons += comparisonCount[1];
+		}
+		printf("\n\n\n");
+		printf("Total searches: %d\n", totalSearches);
+		printf("Total linked list comparisons: %d\n", totalListComparisons);
+		printf("Total hash table comparisons: %d\n", totalHashComparisons);
+	}
+
+
 	// free sorted linked list
 	freeList(head);
 
