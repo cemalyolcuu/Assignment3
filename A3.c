@@ -118,6 +118,75 @@ int insertIntoHashTable(LinkedList* hashTable[], char* name)
 	return insertSorted(&hashTable[index], name);
 }
 
+/*
+* Function      : searchLinkedList
+* Description   : Searches for a name in a sorted linked list and counts the comparisons
+* Returns       : The matching node or NULL
+*/
+LinkedList* searchLinkedList(char* searchName, LinkedList* linkedList, int* comparisonCount)
+{
+	LinkedList* current = linkedList;
+	int result;
+
+	*comparisonCount = 0;
+
+	while (current != NULL)
+	{
+		result = strcmp(current->name, searchName);
+		(*comparisonCount)++;
+
+		if (result == 0)
+		{
+			return current;
+		}
+
+		if (result > 0)
+		{
+			return NULL;
+		}
+
+		current = current->next;
+	}
+
+	return NULL;
+}
+
+/*
+* Function      : searchForNameTwice
+* Description   : Searches for a name in both data structures and displays the comparison counts
+* Returns       : void
+*/
+void searchForNameTwice(char* searchName, LinkedList* hashTable[], int comparisonCount[2], LinkedList* head)
+{
+	LinkedList* found;
+	int index;
+
+	// search the long linked list
+	found = searchLinkedList(searchName, head, &comparisonCount[0]);
+	if (found != NULL)
+	{
+		printf("\t%s was found in the linked list in %d comparisons\n", searchName, comparisonCount[0]);
+	}
+	else
+	{
+		printf("\t%s was NOT found in the linked list in %d comparisons\n", searchName, comparisonCount[0]);
+	}
+
+	// search the hash table
+	index = GenerateHash(searchName);
+	found= searchLinkedList(searchName, hashTable[index], &comparisonCount[1]);
+
+	if (found != NULL)
+	{
+		printf("\t%s was found in the hash table bucket in %d comparisons\n", searchName, comparisonCount[1]);
+	}
+	else
+	{
+		printf("\t%s was NOT found in the hash table bucket in %d comparisons\n", searchName, comparisonCount[1]);
+	}
+
+}
+
 int main(void)
 {
 	LinkedList* head = NULL;
@@ -181,5 +250,4 @@ int main(void)
 	}
 	return success ? 0 : 1;
 
-	return 0;
 }
